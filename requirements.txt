@@ -1,7 +1,7 @@
 # ----------------------
 # Flask
 # ----------------------
-flask
+Flask
 Flask-WTF
 Flask-SQLAlchemy
 Flask-Migrate

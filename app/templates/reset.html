@@ -19,53 +19,36 @@
     <link rel="stylesheet" title="compact" href="/static/css/app.css">
     </head>
   <body>
- {% include "background.html" %}
-<div align="center" style="margin:auto">
     
-<form  action="{{ url_for('login') }}" method="post">
-    {{ form.csrf_token }}
-   
-     <div align="center" style="margin:auto" >
+     {% include "background.html" %}
+     
+       <div align="center" style="margin:auto" >
     <img width="500" height="150" src ="/static/imgs/wishlist.png"/>
  </div>
-
-  <h2>Please sign in</h2>
-     {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <div class="alert alert-success">
-        <ul class="flashes">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
-    {% endwith %}
-
- <div class="form-group">
-        {{ form.email.label }}
-        {{ form.email(class='form-control', placeholder="example@yahoo.com",style="width:300px") }}
-      </div>
-      <div class="form-group" >
-        {{ form. password.label }}
-        {{ form. password(class='form-control', placeholder="************",style="width:300px",) }}
-        <a class="_19gtn" href="/reset">Forgot?</a>
-      
-      </div>
-      
-
-  <button style="width:80px" class="btn btn-primary" type="submit">Sign in</button>
-  <br>
-  <div class ="signup">
+ <div>
+    <h1>Reset Password</h1>
+    
     <p>
-      
-    Don't have an account?
-  <a href="{{ url_for('register') }}">Sign Up</a>
-  </p>
-   </div>
-</form>
+      We can help you reset your password using your email address linked to your account.
+    </p>
+    
+    <form  method="post">
+ 
+       <div class="form-group">
+        <label>E-Mail :</label>
+        <input id="email" maxlength="75" name="email" type="text">
+        
 
-    <footer>
+    </form>
+   
+   
+ </div>
+
+ 
+ 
+ 
+ 
+     <footer>
         <div class="container">
             {% include "footer.html" %}
         </div>

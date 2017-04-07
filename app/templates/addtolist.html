@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block main %}
+ {% include "background.html" %}
+  {% raw %}
+  
+  <h1 class="page-header"></h1>
+<p class="lead"></p>
+
+  <div align="center" style="margin:auto" >
+    <img width="500" height="150" src ="/static/imgs/wishlist.png"/>
+ </div>
+ 
+  <div ng-app="myWishList" ng-controller="myCtrl">
+<input ng-model="addMe">
+  <button ng-click="addItem()">Add</button>
+  <br>
+  <p>{{errortext}}</p>
+  </div>
+  
+  
+  {% endraw %}
+{% endblock %}
