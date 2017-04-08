@@ -7,31 +7,45 @@ This file creates your application.
 import os
 from app import app,db
 from flask import render_template, request, redirect, url_for, jsonify, flash
+from flask_login import login_user, logout_user, current_user, login_required
 from bs4 import BeautifulSoup
 import requests
 import urlparse
 from image_getter import get_image
-from forms import WishlistForm,WishlistLoginForm
+from forms import WishlistForm,WishlistLoginForm,ResetForm
 import time
 from werkzeug.utils import secure_filename
 import random
-#from models import UserProfile
+from models import UserProfile
+import hashlib
 
 
 ###
 # Routing for your application.
 ###
 
+# --------------- Routing Functions -----------------
+
+@app.route('/', methods=["GET","POST"])
 def startup():
-    """Render website's startup page."""
-    return render_template('startup.html')
-@app.route('/')    
+    return  redirect(url_for('login'))
+    
+    # =============== Register Function ================
+    
 @app.route('/api/users/login', methods=["GET","POST"])
 def login():
    form = WishlistLoginForm()
    if request.method == "POST" and form.validate_on_submit():
         email = request.form['email']
         password = request.form['password']
+        
+        user = UserProfile.query.filter_by(email=email, password=password).first()
+        if user is not None:
+            login_user(user)
+            flash('Logged in successfully.')
+            return redirect(url_for('home'))
+        else:
+            flash('E-mail or Password is incorrect.', 'danger')
    flash_errors(form)
    return render_template("login.html",form=form)
     
@@ -44,23 +58,32 @@ def home():
 def thumbnails():
     return jsonify(thumbnails=get_image())
     
+    # =============== Register Function ================
+    
 @app.route('/api/users/register', methods=["GET","POST"])
 def register():
     form = WishlistForm()
-    #file_folder = app.config['UPLOAD_FOLDER']
+    file_folder = app.config['UPLOAD_FOLDER']
     if request.method == "POST" and form.validate_on_submit():
         fname = request.form['firstname']
         lname = request.form['lastname']
         username = request.form['username']
         userid = randomnum()
         email=request.form['email']
+        password = request.form['password']
         gender = request.form['gender']
+        secretques=request.form['secretques']
+        secretans=request.form['secretans']
         image = request.files['image']
+        accept_tos=request.form['accept_tos']
         created=time.strftime("%-d,%b,%Y")
         filename = secure_filename(image.filename)
         image.save(os.path.join(file_folder, filename))
-        
-        user = UserProfile(fname, lname,username,userid,email, gender,filename,created)
+        hash_num = random.randrange(10,9999)
+        hash_number=str(hash_num)
+        password_hash=  create_hash(password,hash_number )
+    
+        user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, filename, accept_tos, created)
         db.session.add(user) 
         db.session.commit()
         
@@ -69,9 +92,16 @@ def register():
     flash_errors(form)
     return render_template("register.html",form=form)
     
+    # --------------- Random Functions -----------------
+    
+    
+def create_hash(password, hash_num):
+    new_password = password + hash_num
+    return hashlib.md5(new_password).hexdigest()
+    
 def randomnum():
     ran = random.randrange(1000000, 1000001, 3)
-    user = UserProfile.query.filter_by(userid=ran).first()
+    user = UserProfile.query.filter_by(userid=ran).first() # try this line without the query it should work if it doesn't you can alway put it back.
     #checks if ran is already in the database,if it exists it recalculates ran and returns that value
     if user:
         ran = random.randrange(1000000, 1000001, 5)
@@ -90,9 +120,20 @@ def user_wishlist():
 def view_thumbnails():
     return render_template('thumbnails.html')
     
-@app.route('/reset')
+@app.route('/reset', methods=["GET","POST"])
 def reset():
-    return render_template("reset.html")
+    form=ResetForm()
+    if request.method == "POST" and form.validate_on_submit():
+        email = request.form['email']
+        secretques=request.form['secretques']
+        secretans=request.form['secretans']
+        return redirect (url_for('resetpass'))
+    flash_errors(form)
+    return render_template("reset.html",form=form)
+    
+@app.route('/reset/newpass', methods=["GET","POST"])
+def resetpass():
+    return render_template("resetpass.html")
 ###
 # The functions below should be applicable to all Flask apps.
 ###

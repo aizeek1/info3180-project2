@@ -11,9 +11,24 @@ class WishlistForm(FlaskForm):
     password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match') ])
     confirm = PasswordField('Confirm Password')
     gender = SelectField('Gender: ', choices=[('', ''), ('Female', 'Female'),('Male', 'Male'),('Not Specified','Not Specified')])
+    secretques=SelectField('Secret Question: ', choices=[('', ''), ('What is the first name of the person you first kissed?', 
+    'What is the first name of the person you first kissed?'),('Select a number between 1020 and 3089', 'Select a number between 1020 and 3089'),
+    ('What is your guilty pleasure','What is your guilty pleasure')])
+    secretans=StringField('Answer: ', validators=[InputRequired()])
     image = FileField('Profile Picture: ', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images Only')])
     accept_tos = BooleanField('I accept', [validators.DataRequired()])
     
 class WishlistLoginForm(FlaskForm):
         email = StringField('Email Address', validators=[InputRequired(),validators.Length(min=6, max=35)])
         password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match') ])
+        
+
+class ResetForm(FlaskForm):
+        email = StringField('Email Address', validators=[InputRequired(),validators.Length(min=6, max=35)])
+        secretques=SelectField('Secret Question: ', choices=[('', ''), ('What is the first name of the person you first kissed?', 
+    'What is the first name of the person you first kissed?'),('Select a number between 1020 and 3089', 'Select a number between 1020 and 3089'),
+    ('What is your guilty pleasure','What is your guilty pleasure')])
+        secretans=StringField('Answer: ', validators=[InputRequired()])
+    
+    
+    
