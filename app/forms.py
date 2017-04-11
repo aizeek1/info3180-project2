@@ -20,7 +20,7 @@ class WishlistForm(FlaskForm):
     
 class WishlistLoginForm(FlaskForm):
         email = StringField('Email Address', validators=[InputRequired(),validators.Length(min=6, max=35)])
-        password = PasswordField('Password', [validators.DataRequired(), validators.EqualTo('confirm', message='Passwords must match') ])
+        password = PasswordField('Password', [validators.DataRequired() ])
         
 
 class ResetForm(FlaskForm):

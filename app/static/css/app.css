@@ -1,9 +1,12 @@
 .nav-tabs {
     margin-bottom: 15px;
+    
 }
+
 
 html{
   color:black;
+  font-family: "Times New Roman", Times, serif;
 }
 .signup{
       background-color: #fff;
@@ -13,7 +16,18 @@ html{
     padding: 10px 0;
     width:300px;
 }
+.navbar-inverse {
+    background-color: black;
+    border-color: black;
+}
 
+a{
+     color:black;
+}
+a:hover { 
+   
+    color: orange;
+}
 #forgot{
         -webkit-box-align: center;
     -ms-flex-align: center;
@@ -26,4 +40,12 @@ html{
     position: absolute;
     right: 8px;
     top: 0;
+}
+
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+    width:300px;
 }

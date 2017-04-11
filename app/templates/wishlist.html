@@ -8,11 +8,14 @@
 <div align="center" style="margin:auto" >
     <img width="500" height="150" src ="/static/imgs/wishlist.png"/>
  </div>
-<div ng-app="myWishList" ng-controller="myCtrl">
-  <ul>
-    <li ng-repeat="x in items">{{x}}<span ng-click="removeItem($index)">×</span></li>
-  </ul>
-
+<div>
+    
+    
+    
+    <button type="submit" name="add" class="btn btn-warning"style="width:130px">Add  to  Wishlist</button>
+    <button  name="share" class="btn btn-default"style="width:120px">Share Wishlist</button>
 </div>
+
+
 {% endraw %}
 {% endblock %}
