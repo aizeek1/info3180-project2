@@ -6,16 +6,16 @@ This file creates your application.
 """
 import os
 from app import app,db,login_manager
-from flask import render_template, request, redirect, url_for, jsonify, flash
+from flask import render_template, request, redirect, url_for, jsonify, flash,session
 from flask_login import login_user, logout_user, current_user, login_required
 from bs4 import BeautifulSoup
 import requests
 import urlparse
-from forms import WishlistForm,WishlistLoginForm,ResetForm
+from forms import WishlistForm,WishlistLoginForm,ResetForm,AddToWishlistForm
 import time
 from werkzeug.utils import secure_filename
 import random
-from models import UserProfile
+from models import UserProfile,Wishlist
 import hashlib
 
 
@@ -41,9 +41,15 @@ def login():
         user = UserProfile.query.filter_by(email=email, username=password).first()
         if user is not None:
             login_user(user)
-            return redirect(url_for('user_wishlist'))
+            userid=current_user.get_id()
+            session['userId']= userid
+            return redirect(url_for('user_wishlist',userid=userid ))
         else:
-            flash('E-mail or Password is incorrect.', 'danger')
+            user = UserProfile.query.filter_by(email=email).first()
+            if user is not None:
+                flash(' Password is incorrect.', 'danger')
+            else:
+                flash(' Email is not registered.', 'danger')
    flash_errors(form)
    return render_template("login.html",form=form)
     
@@ -51,12 +57,13 @@ def login():
 @login_required
 def home():
     """Render website's home page."""
-    return render_template('home.html')
+    return render_template('home.html',userid=current_user.get_id())
 
 @app.route('/api/thumbnails', methods=["GET"])
 def thumbnails():
+    url=request.form['item_url']
     if request.headers.get('Content-Type') == 'application/json' :
-        return jsonify(thumbnails=get_image())
+        return jsonify(thumbnails=get_image(url))
     
     # =============== Register Function ================
     
@@ -82,7 +89,21 @@ def register():
         hash_num = random.randrange(10,9999)
         hash_number=str(hash_num)
         password_hash=  create_hash(password,hash_number )
-    
+        
+        # checks to see if username is already in database
+        user = UserProfile.query.filter_by(username=username).first()
+        # if user exists then  redirect to the registration page
+        if user is not None:
+            flash('An account with that username already exists', 'danger')
+            return redirect(url_for('register'))
+            
+        # checks to see if email is already in database
+        user = UserProfile.query.filter_by(email=email).first()
+        # if user exists then  redirect to the registration page
+        if user is not None:
+            flash('An account with that email already exists', 'danger')
+            return redirect(url_for('register'))
+            
         user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, filename, accept_tos, created)
         db.session.add(user) 
         db.session.commit()
@@ -109,15 +130,32 @@ def randomnum():
     else:
         #if ran does not already exist in the database it returns the original calculate ran
         return ran
-    
-@app.route('/api/users/{userid}/wishlist', methods=["GET","POST"])
+
+
+@app.route('/api/users/<int:userid>/wishlist', methods=["GET","POST"])
 @login_required
 def user_wishlist(userid):
+    form= AddToWishlistForm()
     if request.method == "GET":
-        return render_template("addtolist.html") 
-    return render_template("wishlist.html")  
+        if form.validate_on_submit():
+            url=request.form['item_url']
+            get_image(url)
+        return render_template("addtolist.html",userid=current_user.get_id(),form=form) 
+    return render_template("wishlist.html",userid=current_user.get_id())  
     
-@app.route('/api/users/{userid}/wishlist/{itemid}', methods=["DELETE"])
+def randomitemnum():
+    ran = random.randrange(2000010, 2090040, 3)
+    item = Wishlist.query.filter_by(itemid=ran).first() # try this line without the query it should work if it doesn't you can alway put it back.
+    #checks if ran is already in the database,if it exists it recalculates ran and returns that value
+    if item:
+        ran = random.randrange(2000010, 2090040,  5)
+        return ran 
+    else:
+        #if ran does not already exist in the database it returns the original calculate ran
+        return ran
+
+    
+@app.route('/api/users/<userid>/wishlist/<itemid>', methods=["DELETE"])
 @login_required
 def view_thumbnails(userid):
     return render_template('thumbnails.html')
@@ -129,7 +167,11 @@ def reset():
         email = request.form['email']
         secretques=request.form['secretques']
         secretans=request.form['secretans']
-        return redirect (url_for('resetpass'))
+        # checks to see if email exists already in database
+        user = UserProfile.query.filter_by(email=email,secretques=secretques,secretans=secretans).first()
+        # if user exists 
+        if user is not None:
+            return redirect(url_for('resetpass'))
     flash_errors(form)
     return render_template("reset.html",form=form)
     
@@ -138,11 +180,12 @@ def resetpass():
     return render_template("resetpass.html")
     
     
-url = "https://www.walmart.com/ip/FAST-TRACK-ERC-Apple-iPhone-7-128GB-Black-LTE-Cellular-AT-T/55237516"#request.form['']
-result = requests.get(url)
-soup = BeautifulSoup(result.text, "html.parser")
 
-def get_image():
+
+
+def get_image(url):
+    result = requests.get(url)
+    soup = BeautifulSoup(result.text, "html.parser")
     images=[]
     
     # This will look for a meta tag with the og:image property
@@ -214,4 +257,4 @@ def page_not_found(error):
 
 
 if __name__ == '__main__':
-    app.run(debug=True,host="0.0.0.0",port="8081")
+    app.run(debug=True,host="0.0.0.0",port="8080")

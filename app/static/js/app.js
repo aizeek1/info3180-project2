@@ -1,6 +1,6 @@
 // Your JavaScript Code here
 /* global angular */
-/* global location */
+
 
 var imageapp = angular.module('myApp', []);
 imageapp.controller('myImage', function($scope, $http) {
@@ -9,3 +9,5 @@ imageapp.controller('myImage', function($scope, $http) {
       $scope.myThumbnails =response.data.thumbnails;
    });
 });
+
+

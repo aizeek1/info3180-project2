@@ -7,6 +7,7 @@
 html{
   color:black;
   font-family: "Times New Roman", Times, serif;
+
 }
 .signup{
       background-color: #fff;
@@ -49,3 +50,8 @@ a:hover {
     border-color: #d6e9c6;
     width:300px;
 }
+.foot{
+
+   color:orange;
+}
+

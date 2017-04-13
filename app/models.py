@@ -1,6 +1,7 @@
 from . import db
 
 class UserProfile(db.Model):
+    __table__name = 'user_profile'
     first_name = db.Column(db.String(80))
     last_name = db.Column(db.String(80))
     username = db.Column(db.String(80), unique=True)
@@ -51,22 +52,37 @@ class UserProfile(db.Model):
 class Wishlist(db.Model):
     __table__name = 'wishlist'
     userid = db.Column(db.Integer, unique=True,primary_key=True)
+    itemid = db.Column(db.Integer, unique=True)
     title = db.Column(db.String(255))
-    price = db.Column(db.Numeric(10, 2))
     description = db.Column(db.String(2500))
     item_url = db.Column(db.String(255))
     image_url = db.Column(db.String(300))
     
-    
-    
-    def __init__(self, userid, title,  price, description, item_url, img_url):
-        self.price = price
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return True
+
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        try:
+            return unicode(self.userid)  # python 2 support
+        except NameError:
+            return str(self.userid)  # python 3 support    
+            
+    def __init__(self, userid, itemid, title,  description, item_url, img_url):
+        self.userid = userid
+        self.itemid = itemid
         self.title = title 
         self.description = description 
         self.item_url = item_url
         self.image_url = img_url
-        self.userid = userid
+       
         
-        
+    def __repr__(self):
+        return '<User %r>' % (self.userid)
         
         

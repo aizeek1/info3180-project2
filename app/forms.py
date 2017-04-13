@@ -30,5 +30,10 @@ class ResetForm(FlaskForm):
     ('What is your guilty pleasure','What is your guilty pleasure')])
         secretans=StringField('Answer: ', validators=[InputRequired()])
     
-    
+class AddToWishlistForm(FlaskForm):
+        item_url = StringField('Item URL: ', validators=[InputRequired()])
+        image_url =  StringField('Image: ', validators=[InputRequired()])
+        title= StringField('Title: ', validators=[InputRequired()])
+        description= StringField('Description: ', validators=[InputRequired()])
+        
     

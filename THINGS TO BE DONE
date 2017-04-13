@@ -5,17 +5,17 @@ ADD ITEMS TO WISH LIST
     to select one before they save the item to their wishlist. should display a success message if the item is successfully added or
     failure otherwise. ) 
     
-VIEW ITEMS IN WISHLIST * jhenai
+VIEW ITEMS IN WISHLIST *Sanjay
     (file is wishlist.html, Each wishlist item, should have a title,description, website address and a thumbnail image.
     The user should be able to choose to add a new item to their wishlist, so can have like a button that directs the user to the page
     to add an  item)
     
-    SHARE WISHLIST
+    SHARE WISHLIST *Sanjay
         (A user should be able to share the wishlist with their friends and family. A "Share Wishlist" button should be on the
         users Wishlist page and when clicked it should open an option that allows the user to type in an email address to send the link to
         their wishlist to friends or family)
         
-DELETE AN ITEM FROM WISHLIST 
+DELETE AN ITEM FROM WISHLIST * jhenai
     (user should also have the ability to remove items from their wish-list)
 
 THUMBNAIL SCRAPPER  *KEEZIA
