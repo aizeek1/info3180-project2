@@ -37,7 +37,7 @@ class UserProfile(db.Model):
          self.username = username
          self.userid=userid
          self.email=email
-         self.password_hash=password
+         self.password=password
          self.hash_number = hash_number
          self.secretques=secretques
          self.secretans=secretans
@@ -51,8 +51,8 @@ class UserProfile(db.Model):
         
 class Wishlist(db.Model):
     __table__name = 'wishlist'
-    userid = db.Column(db.Integer, unique=True,primary_key=True)
-    itemid = db.Column(db.Integer, unique=True)
+    userid = db.Column(db.Integer, unique=True)
+    itemid = db.Column(db.Integer, unique=True,primary_key=True)
     title = db.Column(db.String(255))
     description = db.Column(db.String(2500))
     item_url = db.Column(db.String(255))

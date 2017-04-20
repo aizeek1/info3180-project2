@@ -38,7 +38,11 @@ def login():
         email = request.form['email']
         password = request.form['password']
         
-        user = UserProfile.query.filter_by(email=email, username=password).first()
+        myhash=UserProfile.query.filter_by(email=email).first()
+        hash_number=myhash.hash_number
+        password_hash=  create_hash(password,hash_number )
+        
+        user = UserProfile.query.filter_by(email=email, password=password_hash).first()
         if user is not None:
             login_user(user)
             userid=current_user.get_id()
@@ -60,8 +64,7 @@ def home():
     return render_template('home.html',userid=current_user.get_id())
 
 @app.route('/api/thumbnails', methods=["GET"])
-def thumbnails():
-    url=request.form['item_url']
+def thumbnails(url):
     if request.headers.get('Content-Type') == 'application/json' :
         return jsonify(thumbnails=get_image(url))
     
@@ -81,11 +84,11 @@ def register():
         gender = request.form['gender']
         secretques=request.form['secretques']
         secretans=request.form['secretans']
-        image = request.files['image']
         accept_tos=request.form['accept_tos']
         created=time.strftime("%a, %-d %b %Y")
-        filename = secure_filename(image.filename)
-        image.save(os.path.join(file_folder, filename))
+        
+        image=imagecheck(gender)
+        
         hash_num = random.randrange(10,9999)
         hash_number=str(hash_num)
         password_hash=  create_hash(password,hash_number )
@@ -104,7 +107,7 @@ def register():
             flash('An account with that email already exists', 'danger')
             return redirect(url_for('register'))
             
-        user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, filename, accept_tos, created)
+        user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, image, accept_tos, created)
         db.session.add(user) 
         db.session.commit()
         
@@ -119,7 +122,8 @@ def register():
 def create_hash(password, hash_num):
     new_password = password + hash_num
     return hashlib.md5(new_password).hexdigest()
-    
+
+
 def randomnum():
     ran = random.randrange(1000040, 1900001, 3)
     user = UserProfile.query.filter_by(userid=ran).first() # try this line without the query it should work if it doesn't you can alway put it back.
@@ -131,15 +135,31 @@ def randomnum():
         #if ran does not already exist in the database it returns the original calculate ran
         return ran
 
-
+def imagecheck(gender):
+    if gender =='Female':
+        image="female.jpg"
+    elif gender=='Male':
+        image="male.jpg"
+    else:
+        image="not_specific.png"
+    return image
+    
 @app.route('/api/users/<int:userid>/wishlist', methods=["GET","POST"])
 @login_required
 def user_wishlist(userid):
     form= AddToWishlistForm()
-    if request.method == "GET":
+    if request.method == "POST":
+        user = UserProfile.query.filter_by(userid=userid).first()
         if form.validate_on_submit():
             url=request.form['item_url']
-            get_image(url)
+            title=request.form['title']
+            description=request.form['description']
+            thumbnails(url)
+            itemid=randomitemnum()
+            
+            #wishitem=Wishlist(userid, itemid, title, description, url)
+            #db.session.add(wishitem)
+            #Sdb.session.commit()
         return render_template("addtolist.html",userid=current_user.get_id(),form=form) 
     return render_template("wishlist.html",userid=current_user.get_id())  
     
@@ -158,20 +178,20 @@ def randomitemnum():
 @app.route('/api/users/<userid>/wishlist/<itemid>', methods=["DELETE"])
 @login_required
 def view_thumbnails(userid):
-    return render_template('thumbnails.html')
+    return render_template('thumbnails.html',userid=current_user.get_id())
     
 @app.route('/api/reset', methods=["GET","POST"])
 def reset():
     form=ResetForm()
     if request.method == "POST" and form.validate_on_submit():
         email = request.form['email']
-        secretques=request.form['secretques']
-        secretans=request.form['secretans']
         # checks to see if email exists already in database
-        user = UserProfile.query.filter_by(email=email,secretques=secretques,secretans=secretans).first()
+        user = UserProfile.query.filter_by(email=email).first()
         # if user exists 
         if user is not None:
             return redirect(url_for('resetpass'))
+        else:
+            flash(' Email does not exist.', 'danger')
     flash_errors(form)
     return render_template("reset.html",form=form)
     

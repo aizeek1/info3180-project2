@@ -15,7 +15,6 @@ class WishlistForm(FlaskForm):
     'What is the first name of the person you first kissed?'),('Select a number between 1020 and 3089', 'Select a number between 1020 and 3089'),
     ('What is your guilty pleasure','What is your guilty pleasure')])
     secretans=StringField('Answer: ', validators=[InputRequired()])
-    image = FileField('Profile Picture: ', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images Only')])
     accept_tos = BooleanField('I accept', [validators.DataRequired()])
     
 class WishlistLoginForm(FlaskForm):
@@ -25,14 +24,10 @@ class WishlistLoginForm(FlaskForm):
 
 class ResetForm(FlaskForm):
         email = StringField('Email Address', validators=[InputRequired(),validators.Length(min=6, max=35)])
-        secretques=SelectField('Secret Question: ', choices=[('', ''), ('What is the first name of the person you first kissed?', 
-    'What is the first name of the person you first kissed?'),('Select a number between 1020 and 3089', 'Select a number between 1020 and 3089'),
-    ('What is your guilty pleasure','What is your guilty pleasure')])
-        secretans=StringField('Answer: ', validators=[InputRequired()])
+      
     
 class AddToWishlistForm(FlaskForm):
         item_url = StringField('Item URL: ', validators=[InputRequired()])
-        image_url =  StringField('Image: ', validators=[InputRequired()])
         title= StringField('Title: ', validators=[InputRequired()])
         description= StringField('Description: ', validators=[InputRequired()])
         
