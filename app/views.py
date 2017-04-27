@@ -161,9 +161,16 @@ def user_wishlist(userid):
             description=request.form['description']
             itemid=randomitemnum()
             image=request.form['image']
-            wishitem=Wishlist(userid, itemid, title, description, url, image)
-            db.session.add(wishitem)
-            db.session.commit()
+            # checks to see if url is already in database
+            item = Wishlist.query.filter_by(item_url=url).first()
+            # if user exists then  redirect to the registration page
+            if item is not None:
+                flash('Wishlist item already exists', 'danger')
+                return redirect(url_for('user_wishlist',userid=current_user.get_id()))
+            else:
+                wishitem=Wishlist(userid, itemid, title, description, url, image)
+                db.session.add(wishitem)
+                db.session.commit()
         flash(' Item saved ')
         return render_template("addtolist.html",userid=current_user.get_id(),form=form) 
     wishlists = Wishlist.query.filter_by(userid=userid).all()
@@ -201,7 +208,7 @@ def send_mail(from_name, from_email, to_email, subject, msg):
     from_addr = from_email
     to_addr = to_email
     to_name=''
-    msg="Good day to you, someone you may know has shared their wishlist with you. Here is the link to their wishlist" + msg
+    msg="Good day to you, someone you may know has shared their wishlist with you. Here is the link to their wishlist" + str(msg)
     message_to_send = message.format(from_name, from_addr, to_name,to_addr,subject, msg)
     # Credentials (if needed)
     username = "info3180project2kjjs@gmail.com"
@@ -223,6 +230,7 @@ def delete_entry(userid,itemid):
         wishitem=Wishlist.query.filter_by(itemid=itemid).first()
         db.session.delete(wishitem)
         db.session.commit()
+        flash ('Item Deleted')
         #  cursor.execute('DELETE FROM wishlist WHERE userid = %s and itemid= %s', [userid,itemid])
         return redirect(url_for('user_wishlist',userid=current_user.get_id()))
     

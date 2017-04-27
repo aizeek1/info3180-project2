@@ -5,11 +5,8 @@ ADD ITEMS TO WISH LIST
     
 
     SHARE WISHLIST *Sanjay
-       send button not working correctly
+       not accepting url
         
-DELETE AN ITEM FROM WISHLIST * jhenai
-    (user should also have the ability to remove items from their wish-list)
-
 
 APPROPRIATE AUTHORIZATION
     (You should send the appropriate Authorization header with each request to your API. e.g. Authorization: Basic Sm9objphZGZhZGZkYWZzc2Rh
@@ -28,3 +25,6 @@ THUMBNAIL SCRAPPER  *KEEZIA
     
 VIEW ITEMS IN WISHLIST *Sanjay
     ( Each wishlist item, should have a title,description, website address and a thumbnail image.
+    
+DELETE AN ITEM FROM WISHLIST * jhenai
+    (user should also have the ability to remove items from their wish-list)
