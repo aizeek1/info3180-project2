@@ -9,8 +9,7 @@
 
   <div align="center" style="margin:auto" >
     <img width="500" height="150" src ="/static/imgs/wishlist.png"/>
- </div>
-    {% with messages = get_flashed_messages() %}
+        {% with messages = get_flashed_messages() %}
     {% if messages %}
       <div class="alert alert-success">
         <ul class="flashes">
@@ -21,6 +20,8 @@
       </div>
     {% endif %}
     {% endwith %}
+ </div>
+ 
 <div class="row" ng-app="myApp" ng-controller="myImage">
 
 

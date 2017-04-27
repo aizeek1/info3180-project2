@@ -171,7 +171,8 @@ def user_wishlist(userid):
                 wishitem=Wishlist(userid, itemid, title, description, url, image)
                 db.session.add(wishitem)
                 db.session.commit()
-        flash(' Item saved ')
+                flash(' Item has been saved ')
+                return redirect(url_for('user_wishlist',userid=current_user.get_id()))
         return render_template("addtolist.html",userid=current_user.get_id(),form=form) 
     wishlists = Wishlist.query.filter_by(userid=userid).all()
     return render_template("wishlist.html",userid=current_user.get_id(), wishlists=wishlists)  
@@ -242,7 +243,12 @@ def before_request():
         ctx = flask._request_ctx_stack.top
         ctx.url_adapter.default_method = method
         assert request.method == method
-    
+@app.route('/api/users/<int:userid>/profile', methods=["GET","POST"])  
+def  profile(userid):
+    if request.method == "GET":
+        users = UserProfile.query.filter_by(userid=userid).all()
+        return render_template("profile.html",userid=current_user.get_id(), users=users)  
+        
 @app.route('/api/reset', methods=["GET","POST"])
 def reset():
     form=ResetForm()

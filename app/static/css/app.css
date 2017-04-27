@@ -2,8 +2,13 @@
     margin-bottom: 15px;
     
 }
+.profile{
+    font-size: 20px;
+}
 
-
+.name{
+        font-size: 28px;
+}
 html{
   color:black;
   font-family: "Times New Roman", Times, serif;
