@@ -6,7 +6,7 @@ This file creates your application.
 """
 import os
 from app import app,db,login_manager
-from flask import render_template, request, redirect, url_for, jsonify, flash,session, json
+from flask import render_template, request, redirect, url_for, jsonify, flash,session
 from flask_login import login_user, logout_user, current_user, login_required
 from bs4 import BeautifulSoup
 import requests
@@ -17,13 +17,7 @@ from werkzeug.utils import secure_filename
 import random
 from models import UserProfile,Wishlist
 import hashlib
-import smtplib
 
-
-message= """From: {} <{}>
-To: {} <{}> 
-Subject: {}
-{} """
 
 ###
 # Routing for your application.
@@ -155,19 +149,19 @@ def imagecheck(gender):
 def user_wishlist(userid):
     form= AddToWishlistForm()
     if request.method == "POST":
+        user = UserProfile.query.filter_by(userid=userid).first()
         if form.validate_on_submit():
             url=request.form['item_url']
             title=request.form['title']
             description=request.form['description']
+            thumbnails(url)
             itemid=randomitemnum()
-            image=request.form['image']
-            wishitem=Wishlist(userid, itemid, title, description, url, image)
-            db.session.add(wishitem)
-            db.session.commit()
-        flash(' Item saved ')
+            
+            #wishitem=Wishlist(userid, itemid, title, description, url)
+            #db.session.add(wishitem)
+            #Sdb.session.commit()
         return render_template("addtolist.html",userid=current_user.get_id(),form=form) 
-    wishlists = Wishlist.query.filter_by(userid=userid).all()
-    return render_template("wishlist.html",userid=current_user.get_id(), wishlists=wishlists)  
+    return render_template("wishlist.html",userid=current_user.get_id())  
     
 def randomitemnum():
     ran = random.randrange(2000010, 2090040, 3)
@@ -180,60 +174,11 @@ def randomitemnum():
         #if ran does not already exist in the database it returns the original calculate ran
         return ran
 
-@app.route('/api/users/<int:userid>/wishlist/share', methods=["GET","POST"]) 
-@login_required
-def share(userid):
-    if request.method == "POST":
-        to_email=request.form['email']
-        subject="Shared Wishlist"
-        msg= request.form['msg']
-        user = UserProfile.query.filter_by(userid=userid).first()
-        from_email="info3180project2kjjs@gmail.com"
-        from_name="Wishlist"
-        send_mail(from_name, from_email, to_email, subject, msg)
-        
-        flash('E-Mail has been sent successfully')
-        return redirect(url_for('user_wishlist',userid=current_user.get_id()))
-    return render_template('sharewish.html',userid=current_user.get_id())
-
-def send_mail(from_name, from_email, to_email, subject, msg):
-    #error not collecting senders email
-    from_addr = from_email
-    to_addr = to_email
-    to_name=''
-    msg="Good day to you, someone you may know has shared their wishlist with you. Here is the link to their wishlist" + msg
-    message_to_send = message.format(from_name, from_addr, to_name,to_addr,subject, msg)
-    # Credentials (if needed)
-    username = "info3180project2kjjs@gmail.com"
-    password = "bdmzbbvkddrhpjlc"
-    # The actual mail send
-    server = smtplib.SMTP('smtp.gmail.com:587')
-    server.starttls()
-    server.login(username, password)
-    server.sendmail(from_email, to_addr, message_to_send)
-    server.quit() 
-
-
-@app.route('/api/users/<userid>/wishlist/<itemid>', methods=["GET","POST","DELETE"])
-@login_required
-def delete_entry(userid,itemid):
-    userid=current_user.get_id()
-    if request.method == "POST":
-        # delete_entry = request.form['delete_entry']
-        wishitem=Wishlist.query.filter_by(itemid=itemid).first()
-        db.session.delete(wishitem)
-        db.session.commit()
-        #  cursor.execute('DELETE FROM wishlist WHERE userid = %s and itemid= %s', [userid,itemid])
-        return redirect(url_for('user_wishlist',userid=current_user.get_id()))
     
-@app.before_request
-def before_request():
-    method = request.form.get('delete_entry', '').upper()
-    if method:
-        request.environ['REQUEST_METHOD'] = method
-        ctx = flask._request_ctx_stack.top
-        ctx.url_adapter.default_method = method
-        assert request.method == method
+@app.route('/api/users/<userid>/wishlist/<itemid>', methods=["DELETE"])
+@login_required
+def view_thumbnails(userid):
+    return render_template('thumbnails.html',userid=current_user.get_id())
     
 @app.route('/api/reset', methods=["GET","POST"])
 def reset():
@@ -254,47 +199,8 @@ def reset():
 def resetpass():
     return render_template("resetpass.html")
     
-@app.route('/process', methods=["POST"])
-def process():
     
-    data = json.loads(request.data.decode())
-    url = data["text"] #request.form['item_url']
-    result = requests.get(url)
-    soup = BeautifulSoup(result.text, "html.parser")
-    links = []
-    
-    
-    og_image = (soup.find('meta', property = 'og:image') or soup.find('meta', attrs={'name': 'og:image'}))
-    
-    if og_image and og_image['content']:
-        links.append(og_image['content'])
-        
-    thumbnail_spec = soup.find('link', rel='image_src')
-    
-    if thumbnail_spec and thumbnail_spec['href']:
-        links.append(thumbnail_spec['href'])
-        
-    image = '%s'
-    
-    for img in soup.findAll('img', src=True):
-        links.append(image % urlparse.urljoin(url, img['src']))
-        
-    null = None
-    
-    images = {
-        'error': null,
-        'message' : 'Success',
-        'thumbnails': links
-    }
-    
-    return jsonify(images)
-""" 
-    Keez i know the above and below are basically the same.
-    Still LEAVE IT ALONE
-    i'm working on something 
-    
-    HI IM PAUL
-"""
+
 
 
 def get_image(url):
@@ -339,18 +245,7 @@ def logout():
     logout_user()
     flash('You were logged out')
     return redirect(url_for('login'))
-
-@app.route('/api/test/wishlist', methods=["POST"])
-@login_required
-def testing():
-    if request.method == "POST":
-        # url=request.form['item_url']
-        # title=request.form['title']
-        # description=request.form['description']
-        # itemid=randomitemnum()
-        # image=request.form['image']
-        return render_template("test.html",userid=current_user.get_id())
-
+ 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session    
 @login_manager.user_loader

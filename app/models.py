@@ -51,7 +51,7 @@ class UserProfile(db.Model):
         
 class Wishlist(db.Model):
     __table__name = 'wishlist'
-    userid = db.Column(db.Integer, unique=True)
+    userid = db.Column(db.Integer)
     itemid = db.Column(db.Integer, unique=True,primary_key=True)
     title = db.Column(db.String(255))
     description = db.Column(db.String(2500))

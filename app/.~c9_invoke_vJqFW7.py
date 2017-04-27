@@ -164,7 +164,6 @@ def user_wishlist(userid):
             wishitem=Wishlist(userid, itemid, title, description, url, image)
             db.session.add(wishitem)
             db.session.commit()
-        flash(' Item saved ')
         return render_template("addtolist.html",userid=current_user.get_id(),form=form) 
     wishlists = Wishlist.query.filter_by(userid=userid).all()
     return render_template("wishlist.html",userid=current_user.get_id(), wishlists=wishlists)  
@@ -180,32 +179,29 @@ def randomitemnum():
         #if ran does not already exist in the database it returns the original calculate ran
         return ran
 
-@app.route('/api/users/<int:userid>/wishlist/share', methods=["GET","POST"]) 
+@app.route('/api/users/<int:userid>/wishlist/share', methods=["GET","POST"])
 @login_required
 def share(userid):
     if request.method == "POST":
-        to_email=request.form['email']
-        subject="Shared Wishlist"
-        msg= request.form['msg']
+        to_email=request.form["email"]
+        subject="Wishlist"
+        msg= request.form["message"]
         user = UserProfile.query.filter_by(userid=userid).first()
-        from_email="info3180project2kjjs@gmail.com"
-        from_name="Wishlist"
-        send_mail(from_name, from_email, to_email, subject, msg)
-        
-        flash('E-Mail has been sent successfully')
-        return redirect(url_for('user_wishlist',userid=current_user.get_id()))
+        from_email=user.email
+        send_mail(from_email, to_email, subject, msg)
+def share(userid):
     return render_template('sharewish.html',userid=current_user.get_id())
 
-def send_mail(from_name, from_email, to_email, subject, msg):
+def send_mail(from_name, from_email, subject, msg):
     #error not collecting senders email
-    from_addr = from_email
-    to_addr = to_email
-    to_name=''
-    msg="Good day to you, someone you may know has shared their wishlist with you. Here is the link to their wishlist" + msg
+    from_addr = request.form['e-mail']
+    to_addr = 'recommendersystem01@gmail.com'
+    to_name='Administrator'
+    subject='Recommender System'
     message_to_send = message.format(from_name, from_addr, to_name,to_addr,subject, msg)
     # Credentials (if needed)
-    username = "info3180project2kjjs@gmail.com"
-    password = "bdmzbbvkddrhpjlc"
+    username = 'recommendersystem01@gmail.com'
+    password = 'recommendersystem2017'
     # The actual mail send
     server = smtplib.SMTP('smtp.gmail.com:587')
     server.starttls()
@@ -216,24 +212,8 @@ def send_mail(from_name, from_email, to_email, subject, msg):
 
 @app.route('/api/users/<userid>/wishlist/<itemid>', methods=["GET","POST","DELETE"])
 @login_required
-def delete_entry(userid,itemid):
-    userid=current_user.get_id()
-    if request.method == "POST":
-        # delete_entry = request.form['delete_entry']
-        wishitem=Wishlist.query.filter_by(itemid=itemid).first()
-        db.session.delete(wishitem)
-        db.session.commit()
-        #  cursor.execute('DELETE FROM wishlist WHERE userid = %s and itemid= %s', [userid,itemid])
-        return redirect(url_for('user_wishlist',userid=current_user.get_id()))
-    
-@app.before_request
-def before_request():
-    method = request.form.get('delete_entry', '').upper()
-    if method:
-        request.environ['REQUEST_METHOD'] = method
-        ctx = flask._request_ctx_stack.top
-        ctx.url_adapter.default_method = method
-        assert request.method == method
+def view_thumbnails(userid):
+    return render_template('thumbnails.html',userid=current_user.get_id())
     
 @app.route('/api/reset', methods=["GET","POST"])
 def reset():
@@ -292,8 +272,6 @@ def process():
     Keez i know the above and below are basically the same.
     Still LEAVE IT ALONE
     i'm working on something 
-    
-    HI IM PAUL
 """
 
 
@@ -349,7 +327,7 @@ def testing():
         # description=request.form['description']
         # itemid=randomitemnum()
         # image=request.form['image']
-        return render_template("test.html",userid=current_user.get_id())
+        return render_template("test.html")
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session    

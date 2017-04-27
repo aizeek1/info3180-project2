@@ -2,7 +2,7 @@
 
 {% block main %}
  {% include "background.html" %}
- {% raw %}
+
 <h1 class="page-header"></h1>
 
 <div align="center" style="margin:auto" >
@@ -12,12 +12,93 @@
     <form  method="post">
     
     
-    <button type="submit" name="add" class="btn btn-warning"style="width:130px">Add  to  Wishlist</button> <!--I HATE CLOUD 9 NTN WORKS I CAN'T WORK LIKE THIS-->
+    <button type="submit" name="add" class="btn btn-warning"style="width:130px">Add  to  Wishlist</button> 
 
 </form>
-<br>    <button  name="share" class="btn btn-default"style="width:130px">Share Wishlist</button>
+<br>    <button  name="share" id="share" class="btn btn-default"style="width:130px"><a href="{{ url_for('share',userid=userid) }}">Share Wishlist</a></button>
 </div>
+<div class="spacing"></div>
 
+<!-- View Wishlist -->
+
+{% if wishlists  %}
+
+  {% for wishes in wishlists %}
+  
+    <div class="display-wishlist">
+      <div class="float">
+        <form action="{{ url_for('delete_entry', userid= wishes.userid, itemid= wishes.itemid)}}" method="POST">
+        <input type="hidden" name="delete_entry" id="delete_entry" value="{{wishes.id}}" />
+
+        <button type="submit" name="{{wishes.id}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash"></span></button>
+        <img src="{{ wishes.image_url }}" style="max-width:60%"></img>
+      </div>
+      <div class="pad float">
+        <div class="title_bummy">
+          <h1>{{ wishes.title }}</h1>
+        </div>
+        <div>
+          <h3>Website Url</h3>
+          <a href="{{ wishes.item_url }}">{{ wishes.item_url }}</a>
+        </div>
+        <div class="discription_bummy">
+          <h3>Description</h3>
+          <p>{{ wishes.description }}</p>
+        </div>
+      </div>
+      <div class="clear"></div>
+      </form>
+    </div>
+  
+  {% endfor %}
+
+{% else %}
+  <!--<div class="display-wishlist">
+    <div class="float">
+      <img src="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png" style="max-width:100%"></img>
+    </div>
+    <div class="pad float">
+      <div class="title_bummy">
+        <h1>Asus Zenbook UX530</h1>
+      </div>
+      <div>
+        <h3>Image Url</h3>
+        <a href="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png">https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png</a>
+      </div>
+      <div class="discription_bummy">
+        <h3>Description</h3>
+        <p>This some bumy text so see how something will be displayed after it is rendered</p>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div>
+  
+  <div class="display-wishlist">
+    <div class="float">
+      <img src="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png" style="max-width:100%"></img>
+    </div>
+    <div class="pad float">
+      <div class="title_bummy">
+        <h1>Asus Zenbook UX530</h1>
+      </div>
+      <div>
+        <h3>Image Url</h3>
+        <a href="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png">https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png</a>
+      </div>
+      <div class="discription_bummy">
+        <h3>Description</h3>
+        <p>This some bumy text so see how something will be displayed after it is rendered</p>
+      </div>
+    </div>
+    <div class="clear"></div>
+  </div> -->
+  
+  <div>
+    <h1>There is no Wishes in your Wishlist</h1>
+  </div>
+{% endif %}
+
+ {% raw %}
 
 {% endraw %}
 {% endblock %}
