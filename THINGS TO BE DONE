@@ -1,7 +1,3 @@
-CHECK THAT THE ROUTES MATCH TO WAT WAS STATED IN THE PROJECT DOCUMENT ON OURVLE not sure what this is. the routes
-
-
-
 APPROPRIATE AUTHORIZATION
     (You should send the appropriate Authorization header with each request to your API. e.g. Authorization: Basic Sm9objphZGZhZGZkYWZzc2Rh
     where Sm9objphZGZhZGZkYWZzc2Rh is the hash of the email address and password or using JWT e.g. Authorization: Bearer

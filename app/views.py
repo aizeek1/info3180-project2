@@ -72,9 +72,36 @@ def home():
     return render_template('home.html',userid=current_user.get_id())
 
 @app.route('/api/thumbnails', methods=["GET"])
-def thumbnails(url):
-    if request.headers.get('Content-Type') == 'application/json' :
-        return jsonify(thumbnails=get_image(url))
+def thumbnails():
+    data = json.loads(request.data.decode())
+    url = data["text"] #request.form['item_url']
+    result = requests.get(url)
+    soup = BeautifulSoup(result.text, "html.parser")
+    links = []
+    og_image = (soup.find('meta', property = 'og:image') or soup.find('meta', attrs={'name': 'og:image'}))
+    
+    if og_image and og_image['content']:
+        links.append(og_image['content'])
+        
+    thumbnail_spec = soup.find('link', rel='image_src')
+    
+    if thumbnail_spec and thumbnail_spec['href']:
+        links.append(thumbnail_spec['href'])
+        
+    image = '%s'
+    
+    for img in soup.findAll('img', src=True):
+        links.append(image % urlparse.urljoin(url, img['src']))
+        
+    null = None
+    
+    images = {
+        'error': null,
+        'message' : 'Success',
+        'thumbnails': links
+    }
+    
+    return jsonify(images)
     
     # =============== Register Function ================
     
@@ -264,9 +291,11 @@ def reset():
     flash_errors(form)
     return render_template("reset.html",form=form)
     
+    
 @app.route('/api/reset/newpass', methods=["GET","POST"])
 def resetpass():
     return render_template("resetpass.html")
+    
     
 @app.route('/process', methods=["POST"])
 def process():

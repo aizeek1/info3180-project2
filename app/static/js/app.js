@@ -19,7 +19,7 @@ imageapp.controller('myImage', function($scope, $http) {
 
       event.preventDefault();
 
-      $http.post('/process',{'text':$scope.image_url}).success(function (response) {
+      $http.get('/api/thumbnails',{'text':$scope.image_url}).success(function (response) {
 
 
          console.log(response.thumbnails.length);
@@ -33,8 +33,8 @@ imageapp.controller('myImage', function($scope, $http) {
    }
 });
 
-var request = new XMLHttpRequest();
-request.setRequestHeader("Content-Type","text/plain");
+//var request = new XMLHttpRequest();
+//request.setRequestHeader("Content-Type","text/plain");
 // request.setRequestHeader("Authorization", "Basic " + ("username:password"));
 
 // $http.get('https://www.example.com/someapi', {
