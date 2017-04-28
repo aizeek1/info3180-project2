@@ -1,7 +1,6 @@
-ONCE YOU HAVE PICKED SOMETHING TO DO JUST WRITE UR NAME BESIDE IT, SO WE KNOW WHO IS DOING WHAT
+CHECK THAT THE ROUTES MATCH TO WAT WAS STATED IN THE PROJECT DOCUMENT ON OURVLE not sure what this is. the routes
 
-    SHARE WISHLIST *Sanjay
-       not accepting url
+
 
 APPROPRIATE AUTHORIZATION
     (You should send the appropriate Authorization header with each request to your API. e.g. Authorization: Basic Sm9objphZGZhZGZkYWZzc2Rh
@@ -24,5 +23,8 @@ VIEW ITEMS IN WISHLIST *Sanjay
 DELETE AN ITEM FROM WISHLIST * jhenai
     (user should also have the ability to remove items from their wish-list)
     
-ADD ITEMS TO WISH LIST 
+ADD ITEMS TO WISH LIST *Sanjay
     You should display a success message if the item is successfully added or failure otherwise
+    
+SHARE WISHLIST *Sanjay
+       not accepting url

@@ -18,6 +18,8 @@ import random
 from models import UserProfile,Wishlist
 import hashlib
 import smtplib
+from get_message import get_message
+from sendMail import sendMail
 
 
 message= """From: {} <{}>
@@ -111,7 +113,7 @@ def register():
         # if user exists then  redirect to the registration page
         if user is not None:
             flash('An account with that email already exists', 'danger')
-            return redirect(url_for('register'))
+            return redirect(url_for('login'))
             
         user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, image, accept_tos, created)
         db.session.add(user) 
@@ -194,22 +196,21 @@ def share(userid):
     if request.method == "POST":
         to_email=request.form['email']
         subject="Shared Wishlist"
-        msg= request.form['msg']
+        wishlists = Wishlist.query.filter_by(userid=userid).all()
         user = UserProfile.query.filter_by(userid=userid).first()
+        Person_name = user.first_name + " " + user.last_name 
+        msg= get_message(wishlists, Person_name)
+        sendMail(to_email, Person_name, subject, msg)
         from_email="info3180project2kjjs@gmail.com"
         from_name="Wishlist"
-        send_mail(from_name, from_email, to_email, subject, msg)
-        
         flash('E-Mail has been sent successfully')
         return redirect(url_for('user_wishlist',userid=current_user.get_id()))
     return render_template('sharewish.html',userid=current_user.get_id())
 
 def send_mail(from_name, from_email, to_email, subject, msg):
-    #error not collecting senders email
     from_addr = from_email
     to_addr = to_email
     to_name=''
-    msg="Good day to you, someone you may know has shared their wishlist with you. Here is the link to their wishlist" + str(msg)
     message_to_send = message.format(from_name, from_addr, to_name,to_addr,subject, msg)
     # Credentials (if needed)
     username = "info3180project2kjjs@gmail.com"
@@ -227,12 +228,10 @@ def send_mail(from_name, from_email, to_email, subject, msg):
 def delete_entry(userid,itemid):
     userid=current_user.get_id()
     if request.method == "POST":
-        # delete_entry = request.form['delete_entry']
         wishitem=Wishlist.query.filter_by(itemid=itemid).first()
         db.session.delete(wishitem)
         db.session.commit()
         flash ('Item Deleted')
-        #  cursor.execute('DELETE FROM wishlist WHERE userid = %s and itemid= %s', [userid,itemid])
         return redirect(url_for('user_wishlist',userid=current_user.get_id()))
     
 @app.before_request
@@ -243,6 +242,7 @@ def before_request():
         ctx = flask._request_ctx_stack.top
         ctx.url_adapter.default_method = method
         assert request.method == method
+        
 @app.route('/api/users/<int:userid>/profile', methods=["GET","POST"])  
 def  profile(userid):
     if request.method == "GET":
@@ -270,14 +270,11 @@ def resetpass():
     
 @app.route('/process', methods=["POST"])
 def process():
-    
     data = json.loads(request.data.decode())
     url = data["text"] #request.form['item_url']
     result = requests.get(url)
     soup = BeautifulSoup(result.text, "html.parser")
     links = []
-    
-    
     og_image = (soup.find('meta', property = 'og:image') or soup.find('meta', attrs={'name': 'og:image'}))
     
     if og_image and og_image['content']:
@@ -302,39 +299,7 @@ def process():
     }
     
     return jsonify(images)
-""" 
-    Keez i know the above and below are basically the same.
-    Still LEAVE IT ALONE
-    i'm working on something 
-    
-    HI IM PAUL
-"""
 
-
-def get_image(url):
-    result = requests.get(url)
-    soup = BeautifulSoup(result.text, "html.parser")
-    images=[]
-    
-    # This will look for a meta tag with the og:image property
-    og_image = (soup.find('meta', property='og:image') or
-                        soup.find('meta', attrs={'name': 'og:image'}))
-    if og_image and og_image['content']:
-      images.append(og_image['content'])
-   # print images
-    
-    # This will look for a link tag with a rel attribute set to 'image_src'
-    thumbnail_spec = soup.find('link', rel='image_src')
-    if thumbnail_spec and thumbnail_spec['href']:
-        images.append(thumbnail_spec['href'])
-    #print images
-    
-    
-    image = """ %s """
-    for img in soup.findAll("img", src=True):
-        images.append(image % urlparse.urljoin(url, img["src"]))
-   # print images
-    return images
 
 
 ###
@@ -354,16 +319,6 @@ def logout():
     flash('You were logged out')
     return redirect(url_for('login'))
 
-@app.route('/api/test/wishlist', methods=["POST"])
-@login_required
-def testing():
-    if request.method == "POST":
-        # url=request.form['item_url']
-        # title=request.form['title']
-        # description=request.form['description']
-        # itemid=randomitemnum()
-        # image=request.form['image']
-        return render_template("test.html",userid=current_user.get_id())
 
 # user_loader callback. This callback is used to reload the user object from
 # the user ID stored in the session    

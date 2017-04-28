@@ -8,6 +8,12 @@ imageapp.controller('myImage', function($scope, $http) {
        console.log(response.data.thumbnails);
       $scope.myThumbnails =response.data.thumbnails;
    });
+      
+   // $http.get('/api/home', {
+   //    headers: {
+   //       'Content-type': 'application/json'
+   //    }
+   // });
    
    $scope.get_pics = function(event) {
 
@@ -17,12 +23,7 @@ imageapp.controller('myImage', function($scope, $http) {
 
 
          console.log(response.thumbnails.length);
-         /*var pics_html = [];
-         for (i = 0; i < response.thumbnails.length; i++)
-         {
-            pics_html.push(response.thumbnails[i]);
-         }
-         console.log(pics_html);*/
+         
          $scope.thumbs = response.thumbnails;
       }).
       error(function (error) {
@@ -31,3 +32,13 @@ imageapp.controller('myImage', function($scope, $http) {
    
    }
 });
+
+var request = new XMLHttpRequest();
+request.setRequestHeader("Content-Type","text/plain");
+// request.setRequestHeader("Authorization", "Basic " + ("username:password"));
+
+// $http.get('https://www.example.com/someapi', {
+//  headers: {
+//  'Content-Type': 'application/json'
+//  }
+// });

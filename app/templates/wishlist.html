@@ -43,6 +43,7 @@
         <input type="hidden" name="delete_entry" id="delete_entry" value="{{wishes.id}}" />
 
         <button type="submit" name="{{wishes.id}}" class="btn btn-default btn-sm"><span class="glyphicon glyphicon-trash"></span></button>
+        </form>
         <img src="{{ wishes.image_url }}" style="max-width:60%"></img>
       </div>
       <div class="pad float">
@@ -59,58 +60,14 @@
         </div>
       </div>
       <div class="clear"></div>
-      </form>
     </div>
   
   {% endfor %}
 
 {% else %}
-  <!--<div class="display-wishlist">
-    <div class="float">
-      <img src="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png" style="max-width:100%"></img>
-    </div>
-    <div class="pad float">
-      <div class="title_bummy">
-        <h1>Asus Zenbook UX530</h1>
-      </div>
-      <div>
-        <h3>Image Url</h3>
-        <a href="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png">https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png</a>
-      </div>
-      <div class="discription_bummy">
-        <h3>Description</h3>
-        <p>This some bumy text so see how something will be displayed after it is rendered</p>
-      </div>
-    </div>
-    <div class="clear"></div>
-  </div>
-  
-  <div class="display-wishlist">
-    <div class="float">
-      <img src="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png" style="max-width:100%"></img>
-    </div>
-    <div class="pad float">
-      <div class="title_bummy">
-        <h1>Asus Zenbook UX530</h1>
-      </div>
-      <div>
-        <h3>Image Url</h3>
-        <a href="https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png">https://www.asus.com/media/global/products/xihYFzlnNudujwFj/P_setting_fff_1_90_end_600.png</a>
-      </div>
-      <div class="discription_bummy">
-        <h3>Description</h3>
-        <p>This some bumy text so see how something will be displayed after it is rendered</p>
-      </div>
-    </div>
-    <div class="clear"></div>
-  </div> -->
-  
   <div>
     <h1>There is no Wishes in your Wishlist</h1>
   </div>
 {% endif %}
 
- {% raw %}
-
-{% endraw %}
 {% endblock %}
