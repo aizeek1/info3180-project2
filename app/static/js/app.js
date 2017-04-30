@@ -19,7 +19,7 @@ imageapp.controller('myImage', function($scope, $http) {
 
       event.preventDefault();
 
-      $http.get('/api/thumbnails',{'text':$scope.image_url}).success(function (response) {
+      $http.get('/api/thumbnails?image_url=' +$scope.image_url).success(function (response) {
 
 
          console.log(response.thumbnails.length);
@@ -32,6 +32,25 @@ imageapp.controller('myImage', function($scope, $http) {
    
    }
 });
+
+// var app  = angular.module('myApp2', ['ngRoute']);
+
+// app.config(['$routeProvider',function($routeProvider, $locationProvider){
+
+// 	$routeProvider
+// 	.when('/',{
+// 		templateUrl:'/templates/home.html'
+// 	})
+// 	.when('/wishlist',{
+// 		controller:'WishlistCtrl',
+// 		templateUrl:'/templates/wishlist.html'
+// 	})
+// 	.otherwise({
+// 		redirectTo:'/'
+// 	})
+
+
+// }])
 
 //var request = new XMLHttpRequest();
 //request.setRequestHeader("Content-Type","text/plain");

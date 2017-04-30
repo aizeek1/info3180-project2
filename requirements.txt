@@ -6,6 +6,7 @@ Flask-WTF
 Flask-SQLAlchemy
 Flask-Migrate
 Flask-Login
+Flask-HTTPAuth
 psycopg2
 requests
 beautifulsoup4

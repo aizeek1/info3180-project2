@@ -121,6 +121,15 @@ a:hover {
 .clear{
 	clear: both;
 }
+.btn-style {
+    color: #fff;
+    background-color: #f58383;
+    border-color: #ccc;
+}
+.del-position {
+    position: relative;
+    float: right;
+}
 #background-wrap {
     bottom: 0;
 	left: 0;

@@ -5,8 +5,8 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 import os
-from app import app,db,login_manager
-from flask import render_template, request, redirect, url_for, jsonify, flash,session, json
+from app import app, db, login_manager
+from flask import render_template, request, redirect, url_for, jsonify, flash,session, json, make_response
 from flask_login import login_user, logout_user, current_user, login_required
 from bs4 import BeautifulSoup
 import requests
@@ -20,12 +20,34 @@ import hashlib
 import smtplib
 from get_message import get_message
 from sendMail import sendMail
+from functools import wraps
+from flask_httpauth import HTTPBasicAuth
+
 
 
 message= """From: {} <{}>
 To: {} <{}> 
 Subject: {}
 {} """
+
+auth = HTTPBasicAuth()
+
+# def validate(username, password):
+#     user = UserProfile.query.filter_by(email=username).first()
+#     if user != None:
+#         return user.password
+#     return False
+
+# def authenticate(func):
+#     @wraps(func)
+#     def helper(*args, **kargs):
+#         auth = request.authorization
+#         if not auth or not validate(auth.username, auth.password):
+#             response = make_response("", 401)
+#             response.headers["WWW-Authenticate"] = 'Basic Realm = "Login Required"'
+#             return response
+#         return func(*args, **kargs)
+#     return helper
 
 ###
 # Routing for your application.
@@ -66,15 +88,19 @@ def login():
    return render_template("login.html",form=form)
     
 @app.route('/api/home')
+# @auth.login_required
 @login_required
+# @authenticate
 def home():
     """Render website's home page."""
     return render_template('home.html',userid=current_user.get_id())
 
 @app.route('/api/thumbnails', methods=["GET"])
+# @auth.login_required
+@login_required
+# @authenticate
 def thumbnails():
-    data = json.loads(request.data.decode())
-    url = data["text"] #request.form['item_url']
+    url = request.args.get("image_url")
     result = requests.get(url)
     soup = BeautifulSoup(result.text, "html.parser")
     links = []
@@ -110,6 +136,7 @@ def register():
     form = WishlistForm()
     file_folder = app.config['UPLOAD_FOLDER']
     if request.method == "POST" and form.validate_on_submit():
+        response = { "error": "null", "data": {}, "message": "Success"}
         fname = request.form['firstname']
         lname = request.form['lastname']
         username = request.form['username']
@@ -145,10 +172,14 @@ def register():
         user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, image, accept_tos, created)
         db.session.add(user) 
         db.session.commit()
-        
+        response["data"] = {"user" : user.serialize}
         flash ('Profile Created')
+        # return jsonify(response)
         return redirect (url_for('login'))
     flash_errors(form)
+    response["error"] = "true"
+    response["message"] = "Error"
+    # return jsonify(response)
     return render_template("register.html",form=form)
     
     # --------------- Random Functions -----------------
@@ -180,7 +211,9 @@ def imagecheck(gender):
     return image
     
 @app.route('/api/users/<int:userid>/wishlist', methods=["GET","POST"])
+# @auth.login_required
 @login_required
+# @authenticate
 def user_wishlist(userid):
     form= AddToWishlistForm()
     if request.method == "POST":
@@ -217,8 +250,10 @@ def randomitemnum():
         #if ran does not already exist in the database it returns the original calculate ran
         return ran
 
-@app.route('/api/users/<int:userid>/wishlist/share', methods=["GET","POST"]) 
+@app.route('/api/users/<int:userid>/wishlist/share', methods=["GET","POST"])
+# @auth.login_required
 @login_required
+# @authenticate
 def share(userid):
     if request.method == "POST":
         to_email=request.form['email']
@@ -252,6 +287,7 @@ def send_mail(from_name, from_email, to_email, subject, msg):
 
 @app.route('/api/users/<userid>/wishlist/<itemid>', methods=["GET","POST","DELETE"])
 @login_required
+# @authenticate
 def delete_entry(userid,itemid):
     userid=current_user.get_id()
     if request.method == "POST":
@@ -271,6 +307,8 @@ def before_request():
         assert request.method == method
         
 @app.route('/api/users/<int:userid>/profile', methods=["GET","POST"])  
+# @auth.login_required
+# @authenticate
 def  profile(userid):
     if request.method == "GET":
         users = UserProfile.query.filter_by(userid=userid).all()
@@ -295,39 +333,6 @@ def reset():
 @app.route('/api/reset/newpass', methods=["GET","POST"])
 def resetpass():
     return render_template("resetpass.html")
-    
-    
-@app.route('/process', methods=["POST"])
-def process():
-    data = json.loads(request.data.decode())
-    url = data["text"] #request.form['item_url']
-    result = requests.get(url)
-    soup = BeautifulSoup(result.text, "html.parser")
-    links = []
-    og_image = (soup.find('meta', property = 'og:image') or soup.find('meta', attrs={'name': 'og:image'}))
-    
-    if og_image and og_image['content']:
-        links.append(og_image['content'])
-        
-    thumbnail_spec = soup.find('link', rel='image_src')
-    
-    if thumbnail_spec and thumbnail_spec['href']:
-        links.append(thumbnail_spec['href'])
-        
-    image = '%s'
-    
-    for img in soup.findAll('img', src=True):
-        links.append(image % urlparse.urljoin(url, img['src']))
-        
-    null = None
-    
-    images = {
-        'error': null,
-        'message' : 'Success',
-        'thumbnails': links
-    }
-    
-    return jsonify(images)
 
 
 
