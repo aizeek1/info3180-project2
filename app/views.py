@@ -177,12 +177,12 @@ def register():
         # return jsonify(response)
         return redirect (url_for('login'))
     flash_errors(form)
-    response["error"] = "true"
-    response["message"] = "Error"
+   # response["error"] = "true"
+    #response["message"] = "Error"
     # return jsonify(response)
     return render_template("register.html",form=form)
     
-    # --------------- Random Functions -----------------
+    # --------------- Random Functions ---------------
     
     
 def create_hash(password, hash_num):
