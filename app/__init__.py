@@ -8,7 +8,7 @@ app.config['SECRET_KEY'] = '$up3r$3cretkey'
 UPLOAD_FOLDER = './app/static/imgs'
 app.config['UPLOAD_FOLDER']=UPLOAD_FOLDER
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://hgpwjmelqiiupg:f28f97b9293671ab1dfa3245dedd22ce2ce847fc88d5f1f4dae22ae5186e1ed7@ec2-23-23-222-147.compute-1.amazonaws.com:5432/dc37ue1i9cq2si'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://hgpwjmelqiiupg:f28f97b9293671ab1dfa3245dedd22ce2ce847fc88d5f1f4dae22ae5186e1ed7@ec2-23-23-222-147.compute-1.amazonaws.com:5432/dc37ue1i9cq2si'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True 
 db = SQLAlchemy(app)
 
