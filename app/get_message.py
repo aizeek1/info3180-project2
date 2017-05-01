@@ -16,7 +16,7 @@ def get_message(wishlist, Person_name):
 						<img src="http://beta.pvaconline.com/wp-content/uploads/2013/10/wishlist.png" alt="" style="max-width: 100%;">
 					</div>
 					<div class="pre-header" style="background: #4f5b66;color: #fff;padding: 10px;font-family: 'Raleway', sans-serif;font-size: 25px;text-align: center;margin: 20px 0;">
-						""" + str(Person_name) + """ has just shared there Wishlist with you. If you wish to perchase one of these items please let """ + str(Person_name)+ """ know.
+						""" + str(Person_name) + """ has just shared their Wishlist with you. If you wish to purchase one of these items please let """ + str(Person_name)+ """ know.
 					</div>
 					<div class="email-container" style="max-width: 500px;background: #a7adba;font-family: sans-serif;margin: 0 auto;overflow: hidden;border-radius: 5px;text-align: center;color: #000;">
 						"""+ str(''.join(map(str,message))) +"""
