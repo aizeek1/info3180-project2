@@ -136,7 +136,7 @@ def register():
     form = WishlistForm()
     file_folder = app.config['UPLOAD_FOLDER']
     if request.method == "POST" and form.validate_on_submit():
-        response = { "error": "null", "data": {}, "message": "Success"}
+        # response = { "error": "null", "data": {}, "message": "Success"}
         fname = request.form['firstname']
         lname = request.form['lastname']
         username = request.form['username']
@@ -172,7 +172,7 @@ def register():
         user = UserProfile(fname, lname, username, userid, email, password_hash, hash_number, secretques, secretans, gender, image, accept_tos, created)
         db.session.add(user) 
         db.session.commit()
-        response["data"] = {"user" : user.serialize}
+        #response["data"] = {"user" : user.serialize}
         flash ('Profile Created')
         # return jsonify(response)
         return redirect (url_for('login'))
